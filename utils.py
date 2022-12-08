@@ -19,23 +19,11 @@ def ndate(hinc,cdate):
 #
 def setup_cmap(name,idxlst):
     import os, platform
-    os_name=platform.system()
-    if (os_name=='Darwin'):
-        rootpath='/Users/weiwilliam'
-    elif (os_name=='Windows'):
-        rootpath='F:\GoogleDrive_NCU\Albany'
-    elif (os_name=='Linux'):
-        rootpath=os.getenv('GitHome')+'/pyscripts'
-        if (os.path.exists('/glade')):
-            rootpath='/glade/u/home/swei/research/pyscripts'
-        if (os.path.exists('/scratch')):
-            rootpath='/home/swei/research/pyscripts'
+    from pathlib import Path
     import matplotlib.colors as mpcrs
     import numpy as np
-    if (os_name!='Linux'):
-        nclcmap=rootpath+'/AlbanyWork/Utility/colormaps'
-    else:
-        nclcmap=rootpath+'/colormaps'
+    rootpath=Path(__file__).parent
+    nclcmap=str(rootpath.resolve())+'/colormaps'
     
     cmapname=name
     f=open(nclcmap+'/'+cmapname+'.rgb','r')
