@@ -117,9 +117,9 @@ def setarea(areaname):
     elif (areaname == 'r2o8'):
         minlat=30.;maxlat=45.;minlon=350.;maxlon=40.
     elif (areaname == 'r2o9'):
-        minlat=0.;maxlat=30.;minlon=330.;maxlon=10.
+        minlat=0.;maxlat=30.;minlon=300.;maxlon=345.
     elif (areaname == 'r2o10'):
-        minlat=0.;maxlat=40.;minlon=330.;maxlon=20.
+        minlat=0.;maxlat=20.;minlon=270.;maxlon=320.
     elif (areaname == 'Y20Smk1'): # 2020091112
         minlat=37.;maxlat=50.;minlon=227.;maxlon=240.
     elif (areaname == 'Y20Smk2'): # 2020091500
@@ -140,13 +140,20 @@ def setarea(areaname):
     
     if (areaname!='Glb' and minlon > maxlon):
         crosszero=True
-        minlon=minlon-360.
+        #minlon=minlon-360.
     else:
         crosszero=False
 
     if (minlon==0. and maxlon==360.):
-       cyclic=True
+        cyclic=True
     else:
-       cyclic=False
-        
+        cyclic=False
+
+    if (cyclic):
+        minlon=-180.
+        maxlon=180.
+    else:
+        minlon=(minlon+180)%360-180
+        maxlon=(maxlon+180)%360-180
+
     return minlon,maxlon,minlat,maxlat,crosszero,cyclic
