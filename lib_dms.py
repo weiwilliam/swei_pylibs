@@ -7,14 +7,21 @@ def read_dms(dmskey):
     return tmp
 
 def find_dms_longname(nametag):
+            'S00100':'Terrain surface (or ground) temperature (K)',
+            'X00770':'Total cloudiness (0.-1.0)'
+
     longname_singlelyr_dict = {
-            'S00100':'Surface temperature (K)',
+            'B0062T':'Total precipitation (mm)',
+            'S00030':'Surface albedo (0-1.0) , 12 months ',
+            'S00100':'Terrain surface (or ground) temperature (K)',
             'S00300':'Net radiation flux at surface (W/m^2)',
             'S00310':'Net shortwave (solar) flux at the surface (W/m^2)',
             'S00320':'Net longwave (infrared) flux at the surface (W/m^2)',
+            'X00740':'Low cloudiness (0.-1.0)',
             'X00770':'Total cloudiness (0.-1.0)',
             }
     longname_vertlyr_dict = {
+            '000':'Geopotential height (m)'
             '550':'Cloud liquid water mixing ratio (kg/kg)',
             '551':'Cloud water mixing ratio (kg/kg)',
             '552':'Cloud ice mixing ratio (kg/kg)',
