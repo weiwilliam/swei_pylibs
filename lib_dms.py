@@ -7,9 +7,6 @@ def read_dms(dmskey):
     return tmp
 
 def find_dms_longname(nametag):
-            'S00100':'Terrain surface (or ground) temperature (K)',
-            'X00770':'Total cloudiness (0.-1.0)'
-
     longname_singlelyr_dict = {
             'B0062T':'Total precipitation (mm)',
             'S00030':'Surface albedo (0-1.0) , 12 months ',
