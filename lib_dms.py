@@ -18,7 +18,7 @@ def find_dms_longname(nametag):
             'X00770':'Total cloudiness (0.-1.0)',
             }
     longname_vertlyr_dict = {
-            '000':'Geopotential height (m)'
+            '000':'Geopotential height (m)',
             '550':'Cloud liquid water mixing ratio (kg/kg)',
             '551':'Cloud water mixing ratio (kg/kg)',
             '552':'Cloud ice mixing ratio (kg/kg)',
