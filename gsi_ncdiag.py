@@ -55,7 +55,7 @@ def read_rad_ncdiag(infile,**kwargs):
     area = kwargs.get('area',None)
     cornerll = kwargs.get('cornerll',None)
     select_wavenumber = kwargs.get('chkwvn',None)
-    select_qcflag = kwargs.get('sel_qc',-1)
+    #select_qcflag = kwargs.get('sel_qc',-1)
     cal_ae = kwargs.get('cal_ae',False)
     get_water_frac = kwargs.get('get_water_frac',False) 
     if area != 'Glb':
@@ -64,8 +64,8 @@ def read_rad_ncdiag(infile,**kwargs):
     ds=xa.open_dataset(infile)
     npts=int(ds.nobs.size/ds.nchans.size)
     nchs=ds.nchans.size
-    rlat=np.reshape(ds.Latitude.values,(npts,nchs))
-    rlon=np.reshape(ds.Longitude.values,(npts,nchs))
+    rlat=np.reshape(ds.Latitude.values,(npts,nchs))[:,0]
+    rlon=np.reshape(ds.Longitude.values,(npts,nchs))[:,0]
     rlon=(rlon+180)%360-180
     qcflags=np.reshape(ds.QC_Flag.values,(npts,nchs))
     obs=np.reshape(ds.Observation.values,(npts,nchs))
@@ -78,11 +78,6 @@ def read_rad_ncdiag(infile,**kwargs):
     mask = (~np.isnan(rlat))
     if area != 'Glb':
         mask = mask&((rlon<maxlon)&(rlon>minlon)&(rlat>minlat)&(rlat<maxlat))
-    if select_qcflag != -1:
-        mask = mask&(qcflag==select_qcflag)
-    if sel_bufr != 'all'
-        mask = mask&(obstype==int(bufrtype))
-    npts = rlat[mask].size
 
     if cal_ae:
        aereff_fg=sim-clr
@@ -90,21 +85,23 @@ def read_rad_ncdiag(infile,**kwargs):
        aereff=0.5*abs(aereff_fg)+0.5*abs(aereff_obs)
     if get_water_frac: water_frac=np.reshape(ds.Water_Fraction.values,(npts,nchs))
 
-    data_dict={'rlon':(['obsloc'],rlon[mask,0]),
-               'rlat':(['obsloc'],rlat[mask,0]),
-               'qcflag':(['obsloc','wavenumber'],qcflags[mask]),
-               'tb_obs':(['obsloc','wavenumber'],obs[mask]),
-               'tb_sim':(['obsloc','wavenumber'],sim[mask]),
-               'tb_clr':(['obsloc','wavenumber'],clr[mask]),
-               'varinv':(['obsloc','wavenumber'],varinv[mask]),
-               'omb_bc':(['obsloc','wavenumber'],omb_bc[mask]),
-               'omb_nbc':(['obsloc','wavenumber'],omb_nbc[mask]),
+    data_dict={'rlon':(['obsloc'],rlon[mask]),
+               'rlat':(['obsloc'],rlat[mask]),
+               'qcflag':(['obsloc','wavenumber'],qcflags[mask,:]),
+               'tb_obs':(['obsloc','wavenumber'],obs[mask,:]),
+               'tb_sim':(['obsloc','wavenumber'],sim[mask,:]),
+               'tb_clr':(['obsloc','wavenumber'],clr[mask,:]),
+               'varinv':(['obsloc','wavenumber'],varinv[mask,:]),
+               'omb_bc':(['obsloc','wavenumber'],omb_bc[mask,:]),
+               'omb_nbc':(['obsloc','wavenumber'],omb_nbc[mask,:]),
                }
 
     if cal_ae: data_dict['Ae']=(['obsloc','wavenumber'],aereff)
     if get_water_frac: data_dict['water_frac']=(['obsloc','wavenumber'],water_frac)
 
-    coords_dict={'obsloc':np.arange(npts),'wavenumber':ds.wavenumber.values}
+    out_npts=np.count_nonzero(mask)
+  
+    coords_dict={'obsloc':np.arange(out_npts),'wavenumber':ds.wavenumber.values}
 
     tmpds=xa.Dataset(data_dict,coords=coords_dict)
     
@@ -113,6 +110,10 @@ def read_rad_ncdiag(infile,**kwargs):
            type(select_wavenumber)==float or 
            select_wavenumber.size>0):
           tmpds=tmpds.sel(wavenumber=select_wavenumber)
+
+       #if select_qcflag != -1:
+       #    qcmask = (tmpds.qcflag==select_qcflag)
+       #    tmpds = tmpds
 
     return tmpds
 
@@ -144,7 +145,7 @@ def read_cnv_ncdiag(infile,**kwargs):
         mask = mask&((rlon<maxlon)&(rlon>minlon)&(rlat>minlat)&(rlat<maxlat))
     if useqc:
         mask = mask&(qcflag==1)
-    if sel_bufr != 'all'
+    if sel_bufr != 'all':
         mask = mask&(obstype==int(bufrtype))
     npts = rlat[mask].size
 

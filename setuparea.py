@@ -56,6 +56,8 @@ def setarea(areaname):
         minlat=-70.;maxlat=-30.;minlon=0.;maxlon=360.
     elif (areaname == 'GLK'):
         minlat=40.;maxlat=50.;minlon=268.;maxlon=285.
+    elif (areaname == 'EUR'):
+        minlat=30.;maxlat=70.;minlon=340;maxlon=60.
     elif (areaname == 'EUO'):
         minlat=30.;maxlat=50.;minlon=0.;maxlon=60.
     elif (areaname == 'NEU'):

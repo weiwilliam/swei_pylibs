@@ -147,23 +147,23 @@ def find_cnlvs(indata,topq=None,ntcks=None,eqside=None):
     else:
        cnlvmin=np.sign(tmpmin)*(np.ceil(abs(tmpmin)))
     print(cnlvmin,cnlvmax)
-    if (cnlvmax*cnlvmin<0):
-       if (eqside):
-          cnlvmax=np.max((abs(cnlvmin),abs(cnlvmax)))
-          cnlvs=np.linspace(-cnlvmax,cnlvmax,ntcks)
-       else:
-          h_ntcks=int(ntcks*0.5)
-          if ( np.mod(ntcks,2)==0 ):
-             neg_lvs=np.linspace(cnlvmin,0,h_ntcks,endpoint=False)
-             pos_int=(abs(cnlvmax)/int(ntcks*0.5))
-             pos_lvs=np.arange(0+pos_int,cnlvmax+pos_int,pos_int)
-          else:
-             neg_lvs=np.linspace(cnlvmin,0,h_ntcks,endpoint=False)
-             pos_lvs=np.linspace(0,cnlvmax,h_ntcks+1)
-          cnlvs=np.append(neg_lvs,pos_lvs)
+    if (eqside):
+        cnlvmax=np.max((abs(cnlvmin),abs(cnlvmax)))
+        cnlvs=np.linspace(-cnlvmax,cnlvmax,ntcks)
     else:
-       if (eqside): print('Warning equal side is not applicable because max=%.f, min=%.f' %(cnlvmax,cnlvmin))
-       cnlvs=np.linspace(cnlvmin,cnlvmax,ntcks)
+        if (cnlvmax*cnlvmin<0):
+            h_ntcks=int(ntcks*0.5)
+            if ( np.mod(ntcks,2)==0 ):
+               neg_lvs=np.linspace(cnlvmin,0,h_ntcks,endpoint=False)
+               pos_int=(abs(cnlvmax)/int(ntcks*0.5))
+               pos_lvs=np.arange(0+pos_int,cnlvmax+pos_int,pos_int)
+            else:
+               neg_lvs=np.linspace(cnlvmin,0,h_ntcks,endpoint=False)
+               pos_lvs=np.linspace(0,cnlvmax,h_ntcks+1)
+            cnlvs=np.append(neg_lvs,pos_lvs)
+        else:
+            print('Warning max=%.f, min=%.f' %(cnlvmax,cnlvmin))
+            cnlvs=np.linspace(cnlvmin,cnlvmax,ntcks)
     print(cnlvs)
     return cnlvs
 
