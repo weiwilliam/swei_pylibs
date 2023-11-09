@@ -1,6 +1,16 @@
 __all__ = ['ndate','setup_cmap','cnbestF','latlon_news','lat_ns','lon_we','gen_eqs_by_stats',
-           'find_cnlvs']
+           'find_cnlvs','get_dates']
 import numpy as np
+import pandas as pd
+
+def get_dates(sdate,edate,hint):
+    from datetime import datetime, timedelta
+    date1 = pd.to_datetime(sdate,format='%Y%m%d%H')
+    date2 = pd.to_datetime(edate,format='%Y%m%d%H')
+    delta = timedelta(hours=hint)
+    dates = pd.date_range(start=date1, end=date2, freq=delta)
+    return dates
+    
 
 def ndate(hinc,cdate):
     from datetime import datetime

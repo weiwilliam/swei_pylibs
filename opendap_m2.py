@@ -8,13 +8,14 @@ from datetime import datetime, timedelta
 def opendap_m2_aod(sdate,edate,hint,area,varname,**kwargs):
     outfmt = kwargs.get('outfmt','2d')
     cornerll = kwargs.get('cornerll','None')
+    tag = kwargs.get('tag','tavg1_2d_aer_Nx')
     if area != 'Glb' and cornerll is None:
         raise Exception('Any subregion other than global (Glb) need to specify corner lat/lon')
     else:
         minlat, maxlat, minlon, maxlon = cornerll
 
     m2_url = 'https://goldsmr4.gesdisc.eosdis.nasa.gov/opendap/MERRA2/M2T1NXAER.5.12.4'
-    m2tag = 'tavg1_2d_aer_Nx'
+    m2tag = tag
     
     offset = timedelta(minutes=30)
     date1 = pd.to_datetime(sdate,format='%Y%m%d%H')+offset
