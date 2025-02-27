@@ -10,7 +10,6 @@ def get_dates(sdate,edate,hint):
     delta = timedelta(hours=hint)
     dates = pd.date_range(start=date1, end=date2, freq=delta)
     return dates
-    
 
 def ndate(hinc,cdate):
     from datetime import datetime
@@ -176,4 +175,26 @@ def find_cnlvs(indata,topq=None,ntcks=None,eqside=None):
             cnlvs=np.linspace(cnlvmin,cnlvmax,ntcks)
     print(cnlvs)
     return cnlvs
+
+def oprval_parse(indata=None, oprval_str=None):
+    import operator
+    import re
+
+    ops = {
+        '>': operator.gt,
+        '<': operator.lt,
+        '>=': operator.ge,
+        '<=': operator.le,
+        '==': operator.eq,
+        '!=': operator.ne,
+    }
+
+    pattern = r'(>=|<=|!=|==|>|<)(\d+(\.\d+)?)'
+    match = re.match(pattern, oprval_str)
+
+    opr = match.group(1)
+    val = match.group(2)
+
+    boolarr = ops[opr](indata, val)
+    return boolarr
 
