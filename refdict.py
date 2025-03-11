@@ -8,4 +8,9 @@ ops = {
     '<=': operator.le,
     '==': operator.eq,
     '!=': operator.ne,
+    '-=': operator.isub,
+    '+=': operator.iadd,
+    '*=': operator.imul,
+    '/=': operator.itruediv,
+    '=': None,
 }
