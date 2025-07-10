@@ -1,9 +1,14 @@
-__all__ = ['ndate','setup_cmap','cnbestF','latlon_news','lat_ns','lon_we','gen_eqs_by_stats',
-           'find_cnlvs','get_dates']
+__all__ = [
+    'ndate','setup_cmap','cnbestF','latlon_news','lat_ns','lon_we','gen_eqs_by_stats',
+    'find_cnlvs','get_dates', 'cubicSplineInterpolate', 'haversineDistance',
+]
 import numpy as np
 import pandas as pd
+from scipy.interpolate import CubicSpline
 
-def get_dates(sdate,edate,hint):
+earthR = 6371.  # km
+
+def get_dates(sdate, edate, hint):
     from datetime import datetime, timedelta
     date1 = pd.to_datetime(sdate,format='%Y%m%d%H')
     date2 = pd.to_datetime(edate,format='%Y%m%d%H')
@@ -11,7 +16,8 @@ def get_dates(sdate,edate,hint):
     dates = pd.date_range(start=date1, end=date2, freq=delta)
     return dates
 
-def ndate(hinc,cdate):
+
+def ndate(hinc, cdate):
     from datetime import datetime
     from datetime import timedelta
     yy=int(str(cdate)[:4])
@@ -23,10 +29,12 @@ def ndate(hinc,cdate):
     dnewint=int(str('%4.4d' % dnew.year)+str('%2.2d' % dnew.month)+
                 str('%2.2d' %dnew.day)+str('%2.2d' % dnew.hour))
     return dnewint
-#
-# Set colormap through NCL colormap and index
-#
-def setup_cmap(name,idxlst):
+
+
+def setup_cmap(name, valuelst, idxlst):
+    #
+    # Set colormap through NCL colormap and index
+    #
     import os, platform
     from pathlib import Path
     import matplotlib.colors as mpcrs
@@ -42,32 +50,33 @@ def setup_cmap(name,idxlst):
             clnum=int(line.split('=')[1])
         a.append(line)
     f.close()
-    b=a[-clnum:]
-    c=[]
-    selidx=np.array(idxlst,dtype='int')
+    values = [x/(valuelst[-1]-valuelst[0]) for x in valuelst]
+    b = a[-clnum:]
+    c = []
     if ('MPL' in name or 'GMT' in name):
-       for i in selidx[:]:
-          if (i==0):
-             c.append(tuple(float(y) for y in [1,1,1]))
-          elif (i==1):
-             c.append(tuple(float(y) for y in [0,0,0]))
-          elif (i==-1):
-             c.append(tuple(float(y) for y in [0.5,0.5,0.5]))
-          else:
-             c.append(tuple(float(y) for y in b[i-2].split('#',1)[0].split()))
+        for idx in idxlst:
+            if (i == 0):
+                c.append(tuple(float(y) for y in [1,1,1]))
+            elif (i == 1):
+                c.append(tuple(float(y) for y in [0,0,0]))
+            elif (i == -1):
+                c.append(tuple(float(y) for y in [0.5,0.5,0.5]))
+            else:
+                c.append(tuple(float(y) for y in b[idx-2].split('#', 1)[0].split()))
     else:
-       for i in selidx[:]:
-          if (i==0):
-             c.append(tuple(float(y)/255. for y in [255,255,255]))
-          elif (i==1):
-             c.append(tuple(float(y)/255. for y in [0,0,0]))
-          elif (i==-1):
-             c.append(tuple(float(y)/255. for y in [128,128,128]))
-          else:
-             c.append(tuple(float(y)/255. for y in b[i-2].split('#',1)[0].split()))
+        for idx in idxlst:
+            if (idx == 0):
+                c.append(tuple(float(y)/255. for y in [255, 255, 255]))
+            elif (idx == 1):
+                c.append(tuple(float(y)/255. for y in [0, 0, 0]))
+            elif (idx == -1):
+                c.append(tuple(round(float(y)/255., 4) for y in [128, 128, 128]))
+            else:
+                c.append(tuple(round(float(y)/255., 4) 
+                                     for y in b[idx-2].split('#', 1)[0].split()))
 
-    d=mpcrs.LinearSegmentedColormap.from_list(name,c,selidx.size)
-    return d
+    d = mpcrs.LinearSegmentedColormap.from_list(name, c, len(idxlst))
+    return c, d
 
 def cnbestF(data):
     import numpy as np
@@ -198,3 +207,23 @@ def oprval_parse(indata=None, oprval_str=None):
     boolarr = ops[opr](indata, val)
     return boolarr
 
+# Functions setup
+def cubicSplineInterpolate(row):
+    x = select_aeronet_wvl
+    y = row[['440nm', '500nm', '675nm']].values
+    spline = CubicSpline(x, y)
+    return float(spline(target_wvl))
+    
+def haversineDistance(row):
+    lat1 = np.radians(row['latitude'])
+    lon1 = np.radians(row['longitude'])
+    lat2 = np.radians(ref_lat)
+    lon2 = np.radians(ref_lon)
+    
+    dlat = lat2 - lat1
+    dlon = lon2 - lon1
+
+    a = np.sin(dlat / 2.0)**2 + np.cos(lat1) * np.cos(lat2) * np.sin(dlon / 2.0)**2
+    c = 2 * np.arcsin(np.sqrt(a))
+    
+    return earthR * c
