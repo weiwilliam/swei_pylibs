@@ -55,11 +55,11 @@ def setup_cmap(name, valuelst, idxlst):
     c = []
     if ('MPL' in name or 'GMT' in name):
         for idx in idxlst:
-            if (i == 0):
+            if (idx == 0):
                 c.append(tuple(float(y) for y in [1,1,1]))
-            elif (i == 1):
+            elif (idx == 1):
                 c.append(tuple(float(y) for y in [0,0,0]))
-            elif (i == -1):
+            elif (idx == -1):
                 c.append(tuple(float(y) for y in [0.5,0.5,0.5]))
             else:
                 c.append(tuple(float(y) for y in b[idx-2].split('#', 1)[0].split()))
